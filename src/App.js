@@ -114,7 +114,7 @@ function App() {
     setError('');
     
     try {
-      const response = await fetch(`http://localhost:5000/weather?city=${encodeURIComponent(city)}`);
+      const response = await fetch(`https://weather-now-backend-gw4e.onrender.com/weather?city=${encodeURIComponent(city)}`);
       const data = await response.json();
       
       if (!response.ok) {
