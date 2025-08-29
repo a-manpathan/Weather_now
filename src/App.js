@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadialBarChart, RadialBar, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm, WiFog } from 'react-icons/wi';
 import { FiSearch, FiWind, FiCalendar, FiMapPin, FiTrendingUp, FiBarChart2, FiPieChart, FiActivity } from 'react-icons/fi';
 import { Typewriter } from 'react-simple-typewriter';
@@ -80,31 +80,6 @@ function App() {
   const formatDateForChart = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
-
-  const getActivitySuggestion = (condition, windSpeed) => {
-    const cond = condition?.toLowerCase();
-    if (windSpeed > 15) return "🌬 Great for flying kites or sailing!";
-    switch (cond) {
-      case 'clear':
-      case 'sunny':
-        return "☀️ Great day for hiking or cycling!";
-      case 'rain':
-      case 'drizzle':
-        return "🌧 Perfect for indoor reading or visiting a café.";
-      case 'clouds':
-      case 'cloudy':
-        return "📸 Ideal for a casual walk or photography.";
-      case 'snow':
-        return "❄️ How about skiing or a cozy hot chocolate indoors?";
-      case 'thunderstorm':
-        return "☕ Stay cozy indoors with a warm drink.";
-      case 'mist':
-      case 'fog':
-        return "📸 Perfect for moody photography or a quiet walk.";
-      default:
-        return "🌟 Enjoy your day your way!";
-    }
   };
 
   const handleSearch = async () => {
