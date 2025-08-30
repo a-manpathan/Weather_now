@@ -1,70 +1,57 @@
-# Getting Started with Create React App
+# 🌦️ Weather Now
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A simple and modern weather application built with React that provides **real-time weather insights** with interactive data visualizations.  
+This project was developed as part of a coding challenge to address a specific user persona’s needs.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 👤 User Persona
 
-### `npm start`
+- **Name:** Jamie  
+- **Occupation:** Outdoor Enthusiast  
+- **Need:** Jamie wants to check the current weather conditions quickly for any city.  
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+**Weather Now** was built with this use case in mind — fast, intuitive, and informative.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## ✨ Features
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Real-time Weather Data** → Current temperature, humidity, wind speed  
+- **14-Day Forecast** → Extended forecast with historical + upcoming weather  
+- **Interactive Charts** → Trends for temperature, wind speed, and conditions  
+- **Personalized Suggestions** → Activity recommendations based on weather  
+- **Modern UI** → Glass-morphism cards, video background, smooth animations  
+- **Responsive Design** → Optimized for both desktop and mobile  
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🚀 Live Demo
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+👉 [Weather Now – Deployed on Vercel](https://weather-now-mocha.vercel.app/)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🛠️ Tech Stack
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Frontend:** React 18 + Vite + Tailwind CSS  
+- **Charts:** Recharts  
+- **Animations:** React Simple Typewriter  
+- **Icons:** React Icons (Feather + Weather Icons)  
+- **Backend:** Flask API (Render)  
+- **API:** [Open-Meteo](https://open-meteo.com/)  
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## ⚡ Installation
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+# Clone the repository
+git clone https://github.com/a-manpathan/Weather_now
+cd weather_now
 
-## Learn More
+# Install dependencies
+npm install
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# Start development server
+npm start

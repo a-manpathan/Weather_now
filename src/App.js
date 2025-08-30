@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadialBarChart, RadialBar, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm, WiFog } from 'react-icons/wi';
 import { FiSearch, FiWind, FiCalendar, FiMapPin, FiTrendingUp, FiBarChart2, FiPieChart, FiActivity } from 'react-icons/fi';
 import { Typewriter } from 'react-simple-typewriter';
@@ -10,6 +10,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeChart, setActiveChart] = useState('temperature');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const getWeatherIcon = (condition) => {
     const iconClass = "text-8xl";
@@ -82,31 +84,6 @@ function App() {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  const getActivitySuggestion = (condition, windSpeed) => {
-    const cond = condition?.toLowerCase();
-    if (windSpeed > 15) return "🌬 Great for flying kites or sailing!";
-    switch (cond) {
-      case 'clear':
-      case 'sunny':
-        return "☀️ Great day for hiking or cycling!";
-      case 'rain':
-      case 'drizzle':
-        return "🌧 Perfect for indoor reading or visiting a café.";
-      case 'clouds':
-      case 'cloudy':
-        return "📸 Ideal for a casual walk or photography.";
-      case 'snow':
-        return "❄️ How about skiing or a cozy hot chocolate indoors?";
-      case 'thunderstorm':
-        return "☕ Stay cozy indoors with a warm drink.";
-      case 'mist':
-      case 'fog':
-        return "📸 Perfect for moody photography or a quiet walk.";
-      default:
-        return "🌟 Enjoy your day your way!";
-    }
-  };
-
   const handleSearch = async () => {
     if (!city.trim()) return;
     
@@ -114,7 +91,7 @@ function App() {
     setError('');
     
     try {
-      const response = await fetch(`https://weather-now-backend-gw4e.onrender.com/weather?city=${encodeURIComponent(city)}`);
+      const response = await fetch(`http://localhost:5000/weather?city=${encodeURIComponent(city)}`);
       const data = await response.json();
       
       if (!response.ok) {
@@ -142,9 +119,79 @@ function App() {
     setLoading(false);
   };
 
+  const fetchSuggestions = async (query) => {
+    if (query.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/suggestions?q=${encodeURIComponent(query)}`);
+      const data = await response.json();
+      setSuggestions(data.suggestions || []);
+      setShowSuggestions(true);
+    } catch (err) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setCity(value);
+    
+    // Debounce suggestions
+    clearTimeout(window.suggestionTimeout);
+    window.suggestionTimeout = setTimeout(() => {
+      fetchSuggestions(value);
+    }, 300);
+  };
+
+  const handleSuggestionClick = async (suggestion) => {
+    setCity(suggestion.name);
+    setSuggestions([]);
+    setShowSuggestions(false);
+    
+    // Auto-fetch weather data
+    setLoading(true);
+    setError('');
+    
+    try {
+      const response = await fetch(`http://localhost:5000/weather?city=${encodeURIComponent(suggestion.name)}`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        setError(data.error || 'City not found. Please try again.');
+        setWeather(null);
+      } else {
+        setWeather({
+          city: `${data.city}, ${suggestion.admin1 || ''}, ${suggestion.country || ''}`.replace(', , ', ', ').replace(/^, |, $/g, ''),
+          temperature: Math.round(data.current_weather.temperature_c),
+          condition: data.current_weather.condition,
+          windSpeed: Math.round(data.current_weather.windspeed_kmh),
+          humidity: data.current_weather.humidity_percent,
+          activitySuggestion: data.current_weather.activity_suggestion,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          dailyForecast: [...data.past_weather, ...data.daily_weather]
+        });
+        setError('');
+      }
+    } catch (err) {
+      setError('Failed to fetch weather data. Please try again.');
+      setWeather(null);
+    }
+    
+    setLoading(false);
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
+      setShowSuggestions(false);
       handleSearch();
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
     }
   };
 
@@ -236,7 +283,7 @@ function App() {
           </div>
 
           {/* Search Card */}
-          <div className="max-w-md mx-auto mb-12">
+          <div className="max-w-md mx-auto mb-12 relative">
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-white/50">
               <div className="flex gap-3">
                 <div className="relative flex-1">
@@ -244,7 +291,7 @@ function App() {
                   <input
                     type="text"
                     value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    onChange={handleInputChange}
                     onKeyPress={handleKeyPress}
                     placeholder="Enter city name..."
                     className="w-full pl-12 pr-4 py-4 rounded-2xl border-0 bg-slate-50/50 text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-300"
@@ -258,6 +305,27 @@ function App() {
                   <FiSearch className="text-xl" />
                 </button>
               </div>
+              
+              {/* Suggestions Dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 z-[9999] max-h-60 overflow-y-auto">
+                  {suggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      className="px-4 py-3 hover:bg-blue-50/70 cursor-pointer transition-colors duration-200 border-b border-slate-100 last:border-b-0 first:rounded-t-2xl last:rounded-b-2xl"
+                    >
+                      <div className="flex items-center gap-3">
+                        <FiMapPin className="text-slate-400 text-sm" />
+                        <div>
+                          <p className="text-slate-700 font-medium">{suggestion.name}</p>
+                          <p className="text-slate-500 text-sm">{suggestion.display}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -332,12 +400,12 @@ function App() {
 
                 {/* Weather Averages */}
                 <div className="lg:col-span-1 h-full">
-                  <div className="bg-gradient-to-br from-white/95 to-white/85 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/60 text-center transform transition-all duration-500 hover:shadow-2xl h-full flex flex-col justify-between">
-                    <h3 className="text-2xl font-light text-slate-700 mb-6">Weather Averages</h3>
+                  <div className="bg-gradient-to-br from-white/95 to-white/85 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/60 text-center transform transition-all duration-500 hover:shadow-2xl h-full flex flex-col justify-center">
+                    <h3 className="text-2xl font-light text-slate-700 mb-8">Weather Averages</h3>
                     
-                    <div className="space-y-6">
+                    <div className="space-y-8">
                       <div>
-                        <div className="flex items-center justify-center gap-2 mb-3">
+                        <div className="flex items-center justify-center gap-2 mb-4">
                           <WiDaySunny className="text-4xl text-amber-500" />
                           <span className="text-slate-600 font-light">Avg Temperature</span>
                         </div>
@@ -346,8 +414,8 @@ function App() {
                         </p>
                       </div>
                       
-                      <div className="pt-4 border-t border-slate-200">
-                        <div className="flex items-center justify-center gap-2 mb-3">
+                      <div className="pt-6 border-t border-slate-200">
+                        <div className="flex items-center justify-center gap-2 mb-4">
                           <FiWind className="text-4xl text-blue-500" />
                           <span className="text-slate-600 font-light">Avg Wind Speed</span>
                         </div>
@@ -356,12 +424,12 @@ function App() {
                         </p>
                       </div>
                       
-                      <div className="pt-4 border-t border-slate-200">
-                        <div className="flex items-center justify-center gap-2 mb-3">
+                      <div className="pt-6 border-t border-slate-200">
+                        <div className="flex items-center justify-center gap-2 mb-4">
                           <FiMapPin className="text-4xl text-green-500" />
                           <span className="text-slate-600 font-light">Coordinates</span>
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                           <p className="text-lg font-light text-slate-700">
                             Lat: {weather.latitude?.toFixed(4)}°
                           </p>
