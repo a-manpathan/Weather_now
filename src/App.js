@@ -91,7 +91,7 @@ function App() {
     setError('');
     
     try {
-      const response = await fetch(`http://localhost:5000/weather?city=${encodeURIComponent(city)}`);
+      const response = await fetch(`https://weather-now-backend-gw4e.onrender.com/weather?city=${encodeURIComponent(city)}`);
       const data = await response.json();
       
       if (!response.ok) {
@@ -127,7 +127,7 @@ function App() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/suggestions?q=${encodeURIComponent(query)}`);
+      const response = await fetch(`https://weather-now-backend-gw4e.onrender.com/suggestions?q=${encodeURIComponent(query)}`);
       const data = await response.json();
       setSuggestions(data.suggestions || []);
       setShowSuggestions(true);
@@ -158,7 +158,7 @@ function App() {
     setError('');
     
     try {
-      const response = await fetch(`http://localhost:5000/weather?city=${encodeURIComponent(suggestion.name)}`);
+      const response = await fetch(`https://weather-now-backend-gw4e.onrender.com/weather?city=${encodeURIComponent(suggestion.name)}`);
       const data = await response.json();
       
       if (!response.ok) {
